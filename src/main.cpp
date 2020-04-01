@@ -13,7 +13,7 @@
 #define BAUDRATE                            115200
 
 #define DHT22_PIN                           A1
-#define DHT22_READ_RETRIES                  100
+#define DHT22_WAIT_RESP_MS                  500
 
 #define HH10D_PIN                           7
 
@@ -133,7 +133,7 @@ void setup_hh10d() {
 }
 
 void read_dht22(mkr_sensor_data_t *sensor_data) {
-    uint8_t retries = DHT22_READ_RETRIES;
+    uint32_t wait_ms = DHT22_WAIT_RESP_MS + millis();
 
     do {
         delay(100);
@@ -143,8 +143,7 @@ void read_dht22(mkr_sensor_data_t *sensor_data) {
             LOG_E("Failed to read from DHT sensor!");
             delay(100);
         }
-        retries--;
-    } while ((isnan(isnan(sensor_data->dht22_t)) || isnan(sensor_data->dht22_h)) && retries);
+    } while ((isnan(isnan(sensor_data->dht22_t)) || isnan(sensor_data->dht22_h)) && wait_ms > millis());
 }
 
 void read_sht85(mkr_sensor_data_t *sensor_data) {
